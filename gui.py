@@ -1,12 +1,7 @@
-import smtplib
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-from email.mime.base import MIMEBase
-from email import encoders
 import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
 from tkcalendar import Calendar, DateEntry
-import datetime
+from email_utils import enviar_email
 
 class EmailSenderApp:
     def __init__(self, root):
@@ -121,46 +116,6 @@ class EmailSenderApp:
             else:
                 self.enviar_email(remetente, senha, destinatarios, data_hora_envio, mensagem, self.arquivos_relatorio)
 
-    def enviar_email(self, remetente, senha, destinatarios, data_hora_envio, mensagem=None, arquivos=None):
-        servidor = None
-        try:
-            # Criando o objeto de mensagem
-            msg = MIMEMultipart()
-            msg['From'] = remetente
-            msg['To'] = destinatarios
-            msg['Subject'] = 'Relatório Diário'
-
-            # Corpo da mensagem
-            if not mensagem:
-                corpo = "Olá,\n\nSegue em anexo o relatório diário.\n\nAtenciosamente,\nSeu Nome"
-            else:
-                corpo = mensagem
-            msg.attach(MIMEText(corpo, 'plain'))
-
-            # Anexando os relatórios
-            for arquivo_relatorio in self.arquivos_relatorio:
-                with open(arquivo_relatorio, 'rb') as anexo:
-                    parte_anexo = MIMEBase('application', 'octet-stream')
-                    parte_anexo.set_payload(anexo.read())
-                encoders.encode_base64(parte_anexo)
-                parte_anexo.add_header('Content-Disposition', f"attachment; filename= {arquivo_relatorio}")
-                msg.attach(parte_anexo)
-
-            # Conectando ao servidor SMTP e enviando o e-mail
-            servidor_smtp = 'smtp.gmail.com'
-            porta_smtp = 587
-            servidor = smtplib.SMTP(host=servidor_smtp, port=porta_smtp)
-            servidor.starttls()
-            servidor.login(remetente, senha)
-            texto_email = msg.as_string()
-            servidor.sendmail(remetente, destinatarios.split(','), texto_email)
-            messagebox.showinfo("Sucesso", "E-mail agendado com sucesso!")
-        except Exception as e:
-            messagebox.showerror("Erro", f"Erro ao enviar e-mail: {e}")
-        finally:
-            if servidor:
-                servidor.quit()
-
     def visualizar_envios_pendentes(self):
         # Criar uma nova janela para exibir os envios pendentes
         self.janela_visualizacao = tk.Toplevel(self.root)
@@ -207,7 +162,3 @@ class EmailSenderApp:
 
         # Atualizar a lista de envios pendentes na interface
         self.atualizar_lista_envios_pendentes()
-
-root = tk.Tk()
-app = EmailSenderApp(root)
-root.mainloop()
