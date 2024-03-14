@@ -9,7 +9,7 @@ Este projeto é uma aplicação Python que permite agendar o envio de e-mails de
 
 ![Interface Gráfica 2](imagem-3.JPG)
 
-![Interface Gráfica 2](imagem-3.JPG)
+![Interface Gráfica 2](imagem-2.JPG)
 
 ---
 
